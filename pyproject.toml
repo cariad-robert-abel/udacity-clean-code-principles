@@ -1,0 +1,43 @@
+[project]
+name = "udacity-clean-code-principles"
+version = "0.1.0"
+description = "Udacity Clean Code Principles Project"
+authors = [
+    {name = "Robert ABEL", email = "robert.abel@cariad.technology"},
+]
+readme = "README.md"
+license-files = [
+    "LICENSE",
+    "LICENSE-Udacity"
+]
+dependencies = [
+    "seaborn~=0.13",
+    "shap~=0.50",
+]
+
+requires-python = ">=3.13"
+classifiers = [
+    "License :: Other/Proprietary License",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[tool.pdm]
+distribution = false
+
+[project.optional-dependencies]
+dev = [
+    "autopep8~=2.3",
+    "ipykernel~=7.2",
+    "ipywidgets~=8.1",
+    "pylint~=4.0",
+]
+test = [
+    "pytest~=9.0",
+]
