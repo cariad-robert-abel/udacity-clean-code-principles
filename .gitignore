@@ -329,3 +329,7 @@ zsdoc/data
 
 # PDM
 .pdm-python
+
+# Output Directories
+images/
+logs/
