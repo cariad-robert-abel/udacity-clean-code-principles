@@ -20,6 +20,8 @@ its purpose here is that I clean it up and adhere to clean code practices.
 
 ## Files and data description
 
+- **churn_library.py**:  
+  Refactored library code from original customer attrition (churn) notebook.
 - **churn_notebook.ipynb**:  
   The original customer attrition (churn) notebook, which is supposed to be improved using clean
   code techniques.
@@ -30,15 +32,27 @@ its purpose here is that I clean it up and adhere to clean code practices.
   Best trained Logistic Regression Classifier Model from scikit-learn v1.8.x.
 - **model/rfc_model.pkl**:  
   Best trained Random Forest Classifier Model from scikit-learn v1.8.x.
-
-> [!IMPORTANT]
-> Fix up this section once the final directory layout and file structure becomes apparent.
+- **tests/test_churn_library.py**:  
+  Unit tests for customer attrition (churn) library.
 
 ## Running Files
-How do you run your files? What should happen when you run your files?
 
-> [!IMPORTANT]
-> Fix up this section once the final refactoring is done and how to run code has been determined.
+Install run-time dependencies using `pip install -e .`.
+Install group `dev` when using Jupyter to develop notebook code.
+Install group `test` when running unit tests is required.
+
+Install everything:
+
+    pip install -e .[dev,test]
+
+Run the main executable, which performs exploratory data analysis, trains models, and outputs result
+pictures using:
+
+    python churn_library.py
+
+Run unit tests using:
+
+    pytest
 
 ## Packaging
 

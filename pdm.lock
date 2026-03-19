@@ -5,7 +5,7 @@
 groups = ["default", "dev", "test"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:2f0f678acc723c43f6e6887892ab784f32a2e046e736bdd3207ea6cdcfd0832b"
+content_hash = "sha256:e7305720701e8b9fdcba0ecd4468fba059cc56431ef97db939af763f602428e2"
 
 [[metadata.targets]]
 requires_python = ">=3.13"
@@ -27,7 +27,7 @@ name = "astroid"
 version = "4.0.4"
 requires_python = ">=3.10.0"
 summary = "An abstract syntax tree for Python with inference support."
-groups = ["dev"]
+groups = ["dev", "test"]
 dependencies = [
     "typing-extensions>=4; python_version < \"3.11\"",
 ]
@@ -247,7 +247,7 @@ name = "dill"
 version = "0.4.1"
 requires_python = ">=3.9"
 summary = "serialize all of Python"
-groups = ["dev"]
+groups = ["dev", "test"]
 marker = "python_version >= \"3.11\""
 files = [
     {file = "dill-0.4.1-py3-none-any.whl", hash = "sha256:1e1ce33e978ae97fcfcff5638477032b801c46c7c65cf717f95fbc2248f79a9d"},
@@ -397,7 +397,7 @@ name = "isort"
 version = "8.0.1"
 requires_python = ">=3.10.0"
 summary = "A Python utility / library to sort Python imports."
-groups = ["dev"]
+groups = ["dev", "test"]
 files = [
     {file = "isort-8.0.1-py3-none-any.whl", hash = "sha256:28b89bc70f751b559aeca209e6120393d43fbe2490de0559662be7a9787e3d75"},
     {file = "isort-8.0.1.tar.gz", hash = "sha256:171ac4ff559cdc060bcfff550bc8404a486fee0caab245679c2abe7cb253c78d"},
@@ -627,7 +627,7 @@ name = "mccabe"
 version = "0.7.0"
 requires_python = ">=3.6"
 summary = "McCabe checker, plugin for flake8"
-groups = ["dev"]
+groups = ["dev", "test"]
 files = [
     {file = "mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e"},
     {file = "mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325"},
@@ -869,7 +869,7 @@ name = "platformdirs"
 version = "4.9.4"
 requires_python = ">=3.10"
 summary = "A small Python package for determining appropriate platform-specific dirs, e.g. a `user data dir`."
-groups = ["dev"]
+groups = ["dev", "test"]
 files = [
     {file = "platformdirs-4.9.4-py3-none-any.whl", hash = "sha256:68a9a4619a666ea6439f2ff250c12a853cd1cbd5158d258bd824a7df6be2f868"},
     {file = "platformdirs-4.9.4.tar.gz", hash = "sha256:1ec356301b7dc906d83f371c8f487070e99d3ccf9e501686456394622a01a934"},
@@ -990,7 +990,7 @@ name = "pylint"
 version = "4.0.5"
 requires_python = ">=3.10.0"
 summary = "python code static checker"
-groups = ["dev"]
+groups = ["dev", "test"]
 dependencies = [
     "astroid<=4.1.dev0,>=4.0.2",
     "colorama>=0.4.5; sys_platform == \"win32\"",
@@ -1007,6 +1007,21 @@ dependencies = [
 files = [
     {file = "pylint-4.0.5-py3-none-any.whl", hash = "sha256:00f51c9b14a3b3ae08cff6b2cdd43f28165c78b165b628692e428fb1f8dc2cf2"},
     {file = "pylint-4.0.5.tar.gz", hash = "sha256:8cd6a618df75deb013bd7eb98327a95f02a6fb839205a6bbf5456ef96afb317c"},
+]
+
+[[package]]
+name = "pylint-pytest"
+version = "1.1.7"
+requires_python = ">=3.6"
+summary = "A Pylint plugin to suppress pytest-related false positives."
+groups = ["test"]
+dependencies = [
+    "pylint>=2",
+    "pytest>=4.6",
+]
+files = [
+    {file = "pylint-pytest-1.1.7.tar.gz", hash = "sha256:7a38be02c014eb6d98791eb978e79ed292f1904d3a518289c6d7ac4fb4122e98"},
+    {file = "pylint_pytest-1.1.7-py3-none-any.whl", hash = "sha256:5d687a2f4b17e85654fc2a8f04944761efb11cb15dc46d008f420c377b149151"},
 ]
 
 [[package]]
@@ -1302,7 +1317,7 @@ name = "tomlkit"
 version = "0.14.0"
 requires_python = ">=3.9"
 summary = "Style preserving TOML library"
-groups = ["dev"]
+groups = ["dev", "test"]
 files = [
     {file = "tomlkit-0.14.0-py3-none-any.whl", hash = "sha256:592064ed85b40fa213469f81ac584f67a4f2992509a7c3ea2d632208623a3680"},
     {file = "tomlkit-0.14.0.tar.gz", hash = "sha256:cf00efca415dbd57575befb1f6634c4f42d2d87dbba376128adb42c121b87064"},

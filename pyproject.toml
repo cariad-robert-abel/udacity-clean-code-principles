@@ -40,4 +40,5 @@ dev = [
 ]
 test = [
     "pytest~=9.0",
+    "pylint-pytest>=1.1.7",
 ]
