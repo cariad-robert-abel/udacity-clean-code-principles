@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Shared pytest configuration file, used to hook summary report."""
+"""
+Author: Robert ABEL
+Date Created: 19 Mar 2026
+
+Shared pytest configuration file, used to hook summary report.
+"""
 
 import logging
 

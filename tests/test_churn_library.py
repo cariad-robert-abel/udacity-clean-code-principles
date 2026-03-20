@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Unit Tests for customer attrition (churn) library functions."""
+"""
+Author: Robert ABEL
+Date Created: 19 Mar 2026
+
+Unit Tests for customer attrition (churn) library functions.
+"""
 
 import warnings
 

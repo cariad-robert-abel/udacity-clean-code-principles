@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Library of useful functions to train models to predict customer attrition (churn)."""
+"""
+Author: Robert ABEL
+Date Created: 16 Mar 2026
+
+Library of useful functions to train models to predict customer attrition (churn).
+"""
 
 import logging
 import os
