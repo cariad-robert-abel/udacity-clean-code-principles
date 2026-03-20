@@ -63,9 +63,9 @@ def import_data(pth: str | os.PathLike) -> pd.DataFrame:
         KeyError: if Attrition_Flag column is missing
         OSError: general operating system errors, e.g. permission denied
     """
-    logger.info(f'Importing data from \'{pth}\'...')
+    logger.info('Importing data from %s...', pth)
     df = pd.read_csv(pth, index_col=0)
-    logger.info(f'Successfully imported {df.shape[0]} rows with {df.shape[1]} columns.')
+    logger.info('Successfully imported %d rows with %d columns.', df.shape[0], df.shape[1])
 
     # Attrition_Flag is mandatory to compute Churn column, so raise error if missing
     if 'Attrition_Flag' not in df.columns:
@@ -102,12 +102,12 @@ def perform_eda(df: pd.DataFrame):
     # print some info about columns
     cat_columns = df.select_dtypes(exclude='number').columns.tolist()
     num_columns = df.select_dtypes(include='number').columns.tolist()
-    logger.info(f'Found {len(cat_columns)} categorical columns: {", ".join(cat_columns)}')
-    logger.info(f'Found {len(num_columns)} numeric columns: {", ".join(num_columns)}')
+    logger.info('Found %d categorical columns: %s', len(cat_columns), ", ".join(cat_columns))
+    logger.info('Found %d numeric columns: %s', len(num_columns), ", ".join(num_columns))
 
     # simple histograms for churn and customer age (quantitative variables)
     for column in ('Churn', 'Customer_Age'):
-        logger.info(f'Generating distribution plot for \'{column}\'...')
+        logger.info('Generating distribution plot for %s...', column)
         plt.figure(figsize=(8, 4))
         df[column].hist()
         plt.title(f'{column.replace("_", " ")} Distribution')
@@ -165,7 +165,7 @@ def encoder_helper(df: pd.DataFrame, categories: Iterable[str], response: str) -
         grouped_response = df.groupby(category).mean(numeric_only=True)[response]
         result[f'{category}_{response}'] = [grouped_response.loc[val] for val in df[category]]
 
-    logger.info(f'Create {len(categories)} additional quantitative features for \'{response}\' per qualitative category.')
+    logger.info('Create %d additional quantitative features for %s per qualitative category.', len(categories), response)
 
     # return response frame w/o altering input data frame
     return result
@@ -193,7 +193,7 @@ def perform_feature_engineering(df: pd.DataFrame, response: str) -> tuple[pd.Dat
     cat_columns = [v for v in df.select_dtypes(exclude='number').columns if v not in ('Attrition_Flag',)]
     num_columns = [v for v in df.select_dtypes(include='number').columns if v not in ('CLIENTNUM', response)]
 
-    logger.info(f'Found {len(cat_columns)} qualitative and {len(num_columns)} quantitative features.')
+    logger.info('Found %d qualitative and %d quantitative features.', len(cat_columns), len(num_columns))
 
     # transform non-numeric columns into numeric response columns
     response_values = encoder_helper(df, cat_columns, response)
@@ -502,17 +502,17 @@ def main() -> int:
         X_train, X_test, y_train, y_test = perform_feature_engineering(data, 'Churn')
         # train models and store results
         train_models(X_train, X_test, y_train, y_test)
-    except FileExistsError as e:
-        logger.error(f'Could not create directory {e.filename}, because a file with the same name already exists.')
+    except FileExistsError as exception:
+        logger.error('Could not create directory %s, because a file with the same name already exists.', exception.filename)
         return -1
-    except FileNotFoundError as e:
-        logger.error(f'File not found: {e.filename}')
+    except FileNotFoundError as exception:
+        logger.error('File not found: %s', exception.filename)
         return -1
-    except KeyError as e:
-        logger.error(f'Bank Data is missing mandatory \'{e.args[0]}\' column.')
+    except KeyError as exception:
+        logger.error('Bank Data is missing mandatory \'%s\' column.', exception.args[0])
         return -1
-    except OSError as e:
-        logger.error(f'Operation System Error [{e.errno}]:\n{e}')
+    except OSError as exception:
+        logger.error('Operation System Error [%s]:\n%s', exception.errno, exception)
         return -1
 
     return 0

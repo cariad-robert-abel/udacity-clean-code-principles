@@ -52,9 +52,9 @@ def pytest_terminal_summary(terminalreporter: 'pytest.TerminalReporter', exitsta
     count = {key: _get_stat_count(terminalreporter.stats, key) for key in keys}
 
     logger.info('Pytest Summary Report:')
-    logger.info(f'Exit Status: {exitstatus}')
-    logger.info(f'Total #Tests: {sum(count.values())}')
-    logger.info(f'Passed: {count["passed"]} (X: {count["xpassed"]})')
-    logger.info(f'Failed: {count["failed"]} (X: {count["xfailed"]})')
-    logger.info(f'Skipped: {count["skipped"]}')
-    logger.info(f'Errors: {count["error"]}')
+    logger.info('Exit Status: %d', exitstatus)
+    logger.info('Total #Tests: %d', sum(count.values()))
+    logger.info('Passed: %d (X: %d)', count["passed"], count["xpassed"])
+    logger.info('Failed: %d (X: %d)', count["failed"], count["xfailed"])
+    logger.info('Skipped: %d', count["skipped"])
+    logger.info('Errors: %d', count["error"])
