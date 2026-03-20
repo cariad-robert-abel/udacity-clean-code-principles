@@ -4,7 +4,13 @@
 Author: Robert ABEL
 Date Created: 19 Mar 2026
 
-Shared pytest configuration file, used to hook summary report.
+This file contains shared configuration and hooks for pytest, enhancing the
+testing process for the churn library project. It provides custom logic to
+extend pytest's default behavior, such as logging detailed test summary reports
+and integrating with the project's logging system. By centralizing these
+configurations, the file ensures consistency and improved visibility into test
+outcomes, making it easier for developers to monitor, debug, and maintain the
+codebase.
 """
 
 import logging

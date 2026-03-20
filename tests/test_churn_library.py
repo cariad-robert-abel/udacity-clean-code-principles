@@ -4,7 +4,12 @@
 Author: Robert ABEL
 Date Created: 19 Mar 2026
 
-Unit Tests for customer attrition (churn) library functions.
+This module contains a comprehensive suite of unit tests for the customer attrition (churn)
+library functions. It is designed to rigorously validate the correctness, robustness, and
+reliability of each function within the churn library, covering a wide range of scenarios
+and edge cases. By systematically testing data import, feature engineering, model training,
+and evaluation routines, this module helps ensure that the churn prediction pipeline remains
+stable and maintainable as the codebase evolves.
 """
 
 import warnings

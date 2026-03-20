@@ -3,8 +3,15 @@
 """
 Author: Robert ABEL
 Date Created: 16 Mar 2026
+ 
+This module provides a comprehensive set of functions for processing, analyzing, and modeling
+customer attrition (churn) data. It includes utilities for importing and cleaning data, performing
+exploratory data analysis (EDA), engineering features, and encoding categorical variables.
 
-Library of useful functions to train models to predict customer attrition (churn).
+In addition, the module offers robust tools for training, evaluating, and visualizing machine
+learning models, specifically tailored to predict customer churn. The design emphasizes modularity
+and clarity, making it suitable for both educational purposes and practical applications in data
+science projects focused on customer retention and business analytics.
 """
 
 import logging
