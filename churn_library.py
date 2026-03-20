@@ -3,15 +3,14 @@
 """
 Author: Robert ABEL
 Date Created: 16 Mar 2026
- 
+
 This module provides a comprehensive set of functions for processing, analyzing, and modeling
 customer attrition (churn) data. It includes utilities for importing and cleaning data, performing
-exploratory data analysis (EDA), engineering features, and encoding categorical variables.
-
-In addition, the module offers robust tools for training, evaluating, and visualizing machine
-learning models, specifically tailored to predict customer churn. The design emphasizes modularity
-and clarity, making it suitable for both educational purposes and practical applications in data
-science projects focused on customer retention and business analytics.
+exploratory data analysis (EDA), engineering features, and encoding categorical variables. In
+addition, the module offers robust tools for training, evaluating, and visualizing machine learning
+models, specifically tailored to predict customer churn. The design emphasizes modularity and
+clarity, making it suitable for both educational purposes and practical applications in data science
+projects focused on customer retention and business analytics.
 """
 
 import logging
@@ -72,14 +71,19 @@ def import_data(pth: str | os.PathLike) -> pd.DataFrame:
     """
     logger.info('Importing data from %s...', pth)
     df = pd.read_csv(pth, index_col=0)
-    logger.info('Successfully imported %d rows with %d columns.', df.shape[0], df.shape[1])
+    logger.info(
+        'Successfully imported %d rows with %d columns.',
+        df.shape[0],
+        df.shape[1])
 
-    # Attrition_Flag is mandatory to compute Churn column, so raise error if missing
+    # Attrition_Flag is mandatory to compute Churn column, so raise error if
+    # missing
     if 'Attrition_Flag' not in df.columns:
         raise KeyError('Attrition_Flag')
 
     # simply map categorical column to binary
-    df['Churn'] = df['Attrition_Flag'].apply(lambda val: 0 if val == "Existing Customer" else 1)
+    df['Churn'] = df['Attrition_Flag'].apply(
+        lambda val: 0 if val == "Existing Customer" else 1)
     return df
 
 
@@ -109,8 +113,14 @@ def perform_eda(df: pd.DataFrame):
     # print some info about columns
     cat_columns = df.select_dtypes(exclude='number').columns.tolist()
     num_columns = df.select_dtypes(include='number').columns.tolist()
-    logger.info('Found %d categorical columns: %s', len(cat_columns), ", ".join(cat_columns))
-    logger.info('Found %d numeric columns: %s', len(num_columns), ", ".join(num_columns))
+    logger.info(
+        'Found %d categorical columns: %s',
+        len(cat_columns),
+        ", ".join(cat_columns))
+    logger.info(
+        'Found %d numeric columns: %s',
+        len(num_columns),
+        ", ".join(num_columns))
 
     # simple histograms for churn and customer age (quantitative variables)
     for column in ('Churn', 'Customer_Age'):
@@ -120,7 +130,8 @@ def perform_eda(df: pd.DataFrame):
         plt.title(f'{column.replace("_", " ")} Distribution')
         plt.xlabel(column)
         plt.ylabel('Count')
-        plt.savefig(f'./images/{column.lower().replace("_", "-")}-distribution.png', bbox_inches='tight')
+        plt.savefig(
+            f'./images/{column.lower().replace("_", "-")}-distribution.png', bbox_inches='tight')
 
     # histogram for marital status (relative; qualitative variable)
     plt.figure(figsize=(8, 4))
@@ -128,19 +139,29 @@ def perform_eda(df: pd.DataFrame):
     plt.title('Marital Status Distribution')
     plt.xlabel('Marital Status')
     plt.ylabel('Density')
-    plt.savefig('./images/marital-status-distribution.png', bbox_inches='tight')
+    plt.savefig(
+        './images/marital-status-distribution.png',
+        bbox_inches='tight')
 
-    # histogram for total transaction count (relative; quantitative variable w/ KDE)
+    # histogram for total transaction count (relative; quantitative variable
+    # w/ KDE)
     plt.figure(figsize=(8, 4))
     sns.histplot(df['Total_Trans_Ct'], stat='density', kde=True)
     plt.title('Total Transaction Count Distribution')
     plt.xlabel('Total Transaction Count')
     plt.ylabel('Density')
-    plt.savefig('./images/total-transaction-count-distribution.png', bbox_inches='tight')
+    plt.savefig(
+        './images/total-transaction-count-distribution.png',
+        bbox_inches='tight')
 
     # heatmap of correlation between quantitative variables
     plt.figure(figsize=(10, 5))
-    sns.heatmap(df.corr(numeric_only=True), annot=False, cmap='Dark2_r', linewidths=2)
+    sns.heatmap(
+        df.corr(
+            numeric_only=True),
+        annot=False,
+        cmap='Dark2_r',
+        linewidths=2)
     plt.title('Correlation Heatmap')
     plt.savefig('./images/correlation-heatmap.png', bbox_inches='tight')
 
@@ -148,7 +169,10 @@ def perform_eda(df: pd.DataFrame):
     plt.close('all')
 
 
-def encoder_helper(df: pd.DataFrame, categories: Iterable[str], response: str) -> pd.DataFrame:
+def encoder_helper(
+        df: pd.DataFrame,
+        categories: Iterable[str],
+        response: str) -> pd.DataFrame:
     """Feature Encoding Helper Function
 
     Map categorical columns to mean of response column of original data when grouped by respective
@@ -169,16 +193,25 @@ def encoder_helper(df: pd.DataFrame, categories: Iterable[str], response: str) -
 
     # compute response for each category
     for category in categories:
-        grouped_response = df.groupby(category).mean(numeric_only=True)[response]
-        result[f'{category}_{response}'] = [grouped_response.loc[val] for val in df[category]]
+        grouped_response = df.groupby(category).mean(
+            numeric_only=True)[response]
+        result[f'{category}_{response}'] = [grouped_response.loc[val]
+                                            for val in df[category]]
 
-    logger.info('Create %d additional quantitative features for %s per qualitative category.', len(categories), response)
+    logger.info(
+        'Create %d additional quantitative features for %s per qualitative category.',
+        len(categories),
+        response)
 
     # return response frame w/o altering input data frame
     return result
 
 
-def perform_feature_engineering(df: pd.DataFrame, response: str) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
+def perform_feature_engineering(df: pd.DataFrame,
+                                response: str) -> tuple[pd.DataFrame,
+                                                        pd.DataFrame,
+                                                        pd.Series,
+                                                        pd.Series]:
     """Perform Feature Engineering
 
     Generate Features from every numeric column and transform categorical columns into numeric
@@ -197,10 +230,19 @@ def perform_feature_engineering(df: pd.DataFrame, response: str) -> tuple[pd.Dat
     logger.info('Performing Feature Engineering...')
 
     # exclude non-numeric columns and irrelevant numeric columns from features
-    cat_columns = [v for v in df.select_dtypes(exclude='number').columns if v not in ('Attrition_Flag',)]
-    num_columns = [v for v in df.select_dtypes(include='number').columns if v not in ('CLIENTNUM', response)]
+    cat_columns = [
+        v for v in df.select_dtypes(
+            exclude='number').columns if v not in (
+            'Attrition_Flag',)]
+    num_columns = [
+        v for v in df.select_dtypes(
+            include='number').columns if v not in (
+            'CLIENTNUM', response)]
 
-    logger.info('Found %d qualitative and %d quantitative features.', len(cat_columns), len(num_columns))
+    logger.info(
+        'Found %d qualitative and %d quantitative features.',
+        len(cat_columns),
+        len(num_columns))
 
     # transform non-numeric columns into numeric response columns
     response_values = encoder_helper(df, cat_columns, response)
@@ -208,12 +250,17 @@ def perform_feature_engineering(df: pd.DataFrame, response: str) -> tuple[pd.Dat
     # merge data
     X_data = df[num_columns].join(response_values)
 
-    X_train, X_test, y_train, y_test = train_test_split(X_data, df[response], test_size=0.3, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X_data, df[response], test_size=0.3, random_state=42)
     return X_train, X_test, y_train, y_test
 
 
-def plot_roc_cuve(X_test: pd.DataFrame, y_test: pd.Series, models: Iterable[tuple[str, RandomForestClassifier | LogisticRegression]]):
-    """Plot Receiver Operating Characteristic (ROC) Curve for Logistic Regression and Random Forest Classifiers
+def plot_roc_cuve(X_test: pd.DataFrame,
+                  y_test: pd.Series,
+                  models: Iterable[tuple[str,
+                                         RandomForestClassifier | LogisticRegression]]):
+    """Plot Receiver Operating Characteristic (ROC) Curve for Logistic Regression and Random Forest
+    Classifiers
 
     Args:
         X_test: X testing data
@@ -235,7 +282,8 @@ def plot_roc_cuve(X_test: pd.DataFrame, y_test: pd.Series, models: Iterable[tupl
     ax = plt.gca()
     # iterate over each model and plot ROC curve
     for description, model in models:
-        plot = RocCurveDisplay.from_estimator(model, X_test, y_test, ax=ax, curve_kwargs={'alpha': 0.8})
+        plot = RocCurveDisplay.from_estimator(
+            model, X_test, y_test, ax=ax, curve_kwargs={'alpha': 0.8})
         legend.append(f'{description} (AUC = {plot.roc_auc:.2f})')
     # set legend
     plt.legend(legend)
@@ -284,19 +332,36 @@ def classification_report_image(y_train: pd.Series,
     for label, y_train_preds, y_test_preds in report_data:
         plt.figure(figsize=(4, 4))
         # manually create monospaced text in figure
-        plt.text(0.01, 1.25, f'{label} Train', {'fontsize': 10}, fontproperties='monospace')
-        plt.text(0.01, 0.05, str(classification_report(y_test, y_test_preds)), {'fontsize': 10}, fontproperties='monospace')
-        plt.text(0.01, 0.6, f'{label} Test', {'fontsize': 10}, fontproperties='monospace')
-        plt.text(0.01, 0.7, str(classification_report(y_train, y_train_preds)), {'fontsize': 10}, fontproperties='monospace')
+        plt.text(
+            0.01, 1.25, f'{label} Train', {
+                'fontsize': 10}, fontproperties='monospace')
+        plt.text(
+            0.01, 0.05, str(
+                classification_report(
+                    y_test, y_test_preds)), {
+                'fontsize': 10}, fontproperties='monospace')
+        plt.text(
+            0.01, 0.6, f'{label} Test', {
+                'fontsize': 10}, fontproperties='monospace')
+        plt.text(
+            0.01, 0.7, str(
+                classification_report(
+                    y_train, y_train_preds)), {
+                'fontsize': 10}, fontproperties='monospace')
         plt.axis('off')
         # save current figure
-        plt.savefig(f'./images/{label.lower().replace(" ", "-")}-classification-report.png', bbox_inches='tight')
+        plt.savefig(f'./images/{label.lower().replace(" ",
+                                                      "-")}-classification-report.png',
+                    bbox_inches='tight')
 
     # prevent figures from spilling into notebooks
     plt.close('all')
 
 
-def feature_importance_plot(model: RandomForestClassifier, X_data: pd.DataFrame, output_pth: str | os.PathLike):
+def feature_importance_plot(
+        model: RandomForestClassifier,
+        X_data: pd.DataFrame,
+        output_pth: str | os.PathLike):
     """Store Feature Importance Plot as Image
 
     Feature Importances are retrieved from model and then plotted as a bar chart
@@ -343,7 +408,9 @@ def feature_importance_plot(model: RandomForestClassifier, X_data: pd.DataFrame,
     plt.close('all')
 
 
-def train_rfc(X_train: pd.DataFrame, y_train: pd.Series) -> RandomForestClassifier:
+def train_rfc(
+        X_train: pd.DataFrame,
+        y_train: pd.Series) -> RandomForestClassifier:
     """Train Random Forest Classifier
 
     Args:
@@ -365,7 +432,8 @@ def train_rfc(X_train: pd.DataFrame, y_train: pd.Series) -> RandomForestClassifi
         'criterion': ['gini', 'entropy'],
     }
 
-    # perform grid search over 120 parameter configurations above with 5-fold cross validation
+    # perform grid search over 120 parameter configurations above with 5-fold
+    # cross validation
     cv_rfc = GridSearchCV(estimator=rfc, param_grid=param_grid, cv=5)
     cv_rfc.fit(X_train, y_train)
 
@@ -395,7 +463,12 @@ def train_lrc(X_train: pd.DataFrame, y_train: pd.Series) -> LogisticRegression:
     return lrc
 
 
-def train_models(X_train: pd.DataFrame, X_test: pd.DataFrame, y_train: pd.Series, y_test: pd.Series, incl_orig_lrc: bool = True):
+def train_models(
+        X_train: pd.DataFrame,
+        X_test: pd.DataFrame,
+        y_train: pd.Series,
+        y_test: pd.Series,
+        incl_orig_lrc: bool = True):
     """Train and Store Models
 
     Train Logistic Regression and Random Forest Classifiers on input train/test data.
@@ -421,16 +494,20 @@ def train_models(X_train: pd.DataFrame, X_test: pd.DataFrame, y_train: pd.Series
     """
     logger.info('Training Classifiers...')
 
-    # Unfortunately, due to a bug in early scikit-learn versions, logistic regression would ignore the
-    # max_iter parameter and iterate until convergence was archieved, which is probably why this cell
-    # originally ran 15 to 20 minutes in the first place.
+    # Unfortunately, due to a bug in early scikit-learn versions, logistic regression would ignore
+    # the max_iter parameter and iterate until convergence was archieved, which is probably why this
+    # cell originally ran 15 to 20 minutes in the first place.
     # Current versions of scikit-learn respect the max_iter parameter, leading to multiple warnings,
     # which we'll ignore at this point in order to avoid changing the original code too much.
-    # As we'll see later, the LRC model is performing much better than previously despite this.
+    # As we'll see later, the LRC model is performing much better than
+    # previously despite this.
     previous_filters = warnings.filters.copy()
     warnings.filterwarnings('ignore', category=ConvergenceWarning)
     warnings.filterwarnings('ignore', category=FitFailedWarning)
-    warnings.filterwarnings('ignore', category=UserWarning, message='One or more of the test scores are non-finite')
+    warnings.filterwarnings(
+        'ignore',
+        category=UserWarning,
+        message='One or more of the test scores are non-finite')
 
     # train random forest classifier
     rfc = train_rfc(X_train, X_test, y_train, y_test)
@@ -445,7 +522,8 @@ def train_models(X_train: pd.DataFrame, X_test: pd.DataFrame, y_train: pd.Series
     joblib.dump(lrc, './models/logistic_model.pkl')
 
     # generate list of models
-    models = [('RFC sci-kit learn 1.8.x', rfc), ('LRC sci-kit learn 1.8.x', lrc)]
+    models = [('RFC sci-kit learn 1.8.x', rfc),
+              ('LRC sci-kit learn 1.8.x', lrc)]
 
     # load old LRC model if requested
     if incl_orig_lrc:
@@ -463,8 +541,16 @@ def train_models(X_train: pd.DataFrame, X_test: pd.DataFrame, y_train: pd.Series
     y_test_preds_lr = lrc.predict(X_test)
 
     # output classification report and feature importance plots
-    classification_report_image(y_train, y_test, y_train_preds_lr, y_train_preds_rf, y_test_preds_lr, y_test_preds_rf)
-    feature_importance_plot(rfc, pd.concat((X_train, X_test)), './images/random-forest-feature-importance.png')
+    classification_report_image(
+        y_train,
+        y_test,
+        y_train_preds_lr,
+        y_train_preds_rf,
+        y_test_preds_lr,
+        y_test_preds_rf)
+    feature_importance_plot(
+        rfc, pd.concat(
+            (X_train, X_test)), './images/random-forest-feature-importance.png')
 
 
 def setup_logging():
@@ -506,20 +592,28 @@ def main() -> int:
         # perform exploratory data analysis
         perform_eda(data)
         # get train/test data for model fitting
-        X_train, X_test, y_train, y_test = perform_feature_engineering(data, 'Churn')
+        X_train, X_test, y_train, y_test = perform_feature_engineering(
+            data, 'Churn')
         # train models and store results
         train_models(X_train, X_test, y_train, y_test)
     except FileExistsError as exception:
-        logger.error('Could not create directory %s, because a file with the same name already exists.', exception.filename)
+        logger.error(
+            'Could not create directory %s, because a file with the same name already exists.',
+            exception.filename)
         return -1
     except FileNotFoundError as exception:
         logger.error('File not found: %s', exception.filename)
         return -1
     except KeyError as exception:
-        logger.error('Bank Data is missing mandatory \'%s\' column.', exception.args[0])
+        logger.error(
+            'Bank Data is missing mandatory \'%s\' column.',
+            exception.args[0])
         return -1
     except OSError as exception:
-        logger.error('Operation System Error [%s]:\n%s', exception.errno, exception)
+        logger.error(
+            'Operation System Error [%s]:\n%s',
+            exception.errno,
+            exception)
         return -1
 
     return 0

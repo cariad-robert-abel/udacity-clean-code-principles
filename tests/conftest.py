@@ -4,13 +4,11 @@
 Author: Robert ABEL
 Date Created: 19 Mar 2026
 
-This file contains shared configuration and hooks for pytest, enhancing the
-testing process for the churn library project. It provides custom logic to
-extend pytest's default behavior, such as logging detailed test summary reports
-and integrating with the project's logging system. By centralizing these
-configurations, the file ensures consistency and improved visibility into test
-outcomes, making it easier for developers to monitor, debug, and maintain the
-codebase.
+This file contains shared configuration and hooks for pytest, enhancing the testing process for the
+churn library project. It provides custom logic to extend pytest's default behavior, such as logging
+detailed test summary reports and integrating with the project's logging system. By centralizing
+these configurations, the file ensures consistency and improved visibility into test outcomes,
+making it easier for developers to monitor, debug, and maintain the codebase.
 """
 
 import logging
@@ -26,9 +24,12 @@ logger = logging.getLogger(__name__)
 """Logger for Churn Library Test Summary"""
 
 
-def pytest_terminal_summary(terminalreporter: 'pytest.TerminalReporter', exitstatus: int, config: 'pytest.Config'):
+def pytest_terminal_summary(
+        terminalreporter: 'pytest.TerminalReporter',
+        exitstatus: int,
+        config: 'pytest.Config'):
     """Hook ad the end of Terminal Summary to log results
-    
+
     Args:
         terminalreporter: pytest TerminalReporter object
         exitstatus: pytest exit status code
@@ -39,7 +40,7 @@ def pytest_terminal_summary(terminalreporter: 'pytest.TerminalReporter', exitsta
 
     def _get_stat_count(stats: dict[str, list[Any]], key: str) -> int:
         """Helper function to extract total number of tests from pytest stats dict
-        
+
         Args:
             stats: pytest stats dictionary, e.g. terminalreporter.stats
             key: name of stat, e.g. passed, failed, error etc.

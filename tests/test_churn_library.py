@@ -3,13 +3,13 @@
 """
 Author: Robert ABEL
 Date Created: 19 Mar 2026
-
-This module contains a comprehensive suite of unit tests for the customer attrition (churn)
-library functions. It is designed to rigorously validate the correctness, robustness, and
-reliability of each function within the churn library, covering a wide range of scenarios
-and edge cases. By systematically testing data import, feature engineering, model training,
-and evaluation routines, this module helps ensure that the churn prediction pipeline remains
-stable and maintainable as the codebase evolves.
+ 
+This module contains a comprehensive suite of unit tests for the customer attrition (churn) library
+functions. It is designed to rigorously validate the correctness, robustness, and reliability of each
+function within the churn library, covering a wide range of scenarios and edge cases. By
+systematically testing data import, feature engineering, model training, and evaluation routines,
+this module helps ensure that the churn prediction pipeline remains stable and maintainable as the
+codebase evolves.
 """
 
 import warnings
@@ -29,6 +29,7 @@ if TYPE_CHECKING:
     from pathlib import Path
     from sklearn.linear_model import LogisticRegression
     from sklearn.ensemble import RandomForestClassifier
+
 
 @dataclass(frozen=True)
 class TrainingData:
@@ -50,7 +51,7 @@ class TrainingData:
 @pytest.fixture(scope='module')
 def trainingdata() -> TrainingData:
     """Load Training Data for pytest
-    
+
     This fixture also tests `import_data` and `perform_feature_engineering` in a working
     configuration, i.e. expecting no exceptions etc.
 
@@ -64,10 +65,14 @@ def trainingdata() -> TrainingData:
     x_data = df.sample(frac=0.1, random_state=42, ignore_index=True)
 
     # compute categorical columns
-    cat_columns = [v for v in df.select_dtypes(exclude='number').columns if v not in ('Attrition_Flag',)]
+    cat_columns = [
+        v for v in df.select_dtypes(
+            exclude='number').columns if v not in (
+            'Attrition_Flag',)]
 
-    ## 70/30 train/test split
-    x_train, x_test, y_train, y_test = mut.perform_feature_engineering(x_data, 'Churn')
+    # 70/30 train/test split
+    x_train, x_test, y_train, y_test = mut.perform_feature_engineering(
+        x_data, 'Churn')
     return TrainingData(x_data, x_train, x_test, y_train, y_test, cat_columns)
 
 
@@ -130,7 +135,8 @@ def test_perform_feature_engineering_wo_response(trainingdata: TrainingData):
         trainingdata: training data (fixture)
     """
     with pytest.raises(KeyError):
-        mut.perform_feature_engineering(trainingdata.x_data, response='Missing-Column')
+        mut.perform_feature_engineering(
+            trainingdata.x_data, response='Missing-Column')
 
 
 def test_encoder_helper_single_column(trainingdata: TrainingData):
@@ -147,9 +153,9 @@ def test_encoder_helper_single_column(trainingdata: TrainingData):
 
     # check result columns
     assert f'{first_cat}_Churn' in result.columns, \
-           f'Expected encoded column {first_cat}_Churn not found in output DataFrame.'
+        f'Expected encoded column {first_cat}_Churn not found in output DataFrame.'
     assert 1 == len(result.columns), \
-           f'Expected only 1 column in output DataFrame, but found {len(result.columns)}.'
+        f'Expected only 1 column in output DataFrame, but found {len(result.columns)}.'
 
 
 def test_encoder_helper_missing_column(trainingdata: TrainingData):
@@ -164,10 +170,17 @@ def test_encoder_helper_missing_column(trainingdata: TrainingData):
         mut.encoder_helper(trainingdata.x_data, (first_cat,), 'Missing-Column')
     # test missing column
     with pytest.raises(KeyError):
-        mut.encoder_helper(trainingdata.x_data, (first_cat, 'Missing-Column'), 'Churn')
+        mut.encoder_helper(
+            trainingdata.x_data,
+            (first_cat,
+             'Missing-Column'),
+            'Churn')
 
 
-def test_perform_eda(trainingdata: TrainingData, tmp_path: 'Path', monkeypatch: pytest.MonkeyPatch):
+def test_perform_eda(
+        trainingdata: TrainingData,
+        tmp_path: 'Path',
+        monkeypatch: pytest.MonkeyPatch):
     """Test `perform_eda` with valid input data
 
     Args:
@@ -185,13 +198,16 @@ def test_perform_eda(trainingdata: TrainingData, tmp_path: 'Path', monkeypatch: 
     outdir = tmp_path / 'images'
 
     assert outdir.exists(), \
-           'Expected <cwd>/images directory to be created.'
+        'Expected <cwd>/images directory to be created.'
 
     assert 0 < len(tuple(outdir.glob('*.png'))), \
-           'Expected at lest one EDA output picture.'
+        'Expected at lest one EDA output picture.'
 
 
-def test_perform_eda_missing_column(trainingdata: TrainingData, tmp_path: 'Path', monkeypatch: pytest.MonkeyPatch):
+def test_perform_eda_missing_column(
+        trainingdata: TrainingData,
+        tmp_path: 'Path',
+        monkeypatch: pytest.MonkeyPatch):
     """Test `perform_eda` with at least one missing column
 
     Args:
@@ -207,7 +223,10 @@ def test_perform_eda_missing_column(trainingdata: TrainingData, tmp_path: 'Path'
         mut.perform_eda(trainingdata.x_data.drop('Churn'))
 
 
-def test_perform_eda_fileexistserror(trainingdata: TrainingData, tmp_path: 'Path', monkeypatch: pytest.MonkeyPatch):
+def test_perform_eda_fileexistserror(
+        trainingdata: TrainingData,
+        tmp_path: 'Path',
+        monkeypatch: pytest.MonkeyPatch):
     """Test `perform_eda` when output directory cannot be created
 
     Args:
@@ -226,7 +245,11 @@ def test_perform_eda_fileexistserror(trainingdata: TrainingData, tmp_path: 'Path
         mut.perform_eda(trainingdata.x_data)
 
 
-def test_plot_roc_curve(trainingdata: TrainingData, trainedmodels: TrainedModels, tmp_path: 'Path', monkeypatch: pytest.MonkeyPatch):
+def test_plot_roc_curve(
+        trainingdata: TrainingData,
+        trainedmodels: TrainedModels,
+        tmp_path: 'Path',
+        monkeypatch: pytest.MonkeyPatch):
     """Test `plot_roc_cuve` with valid input data
 
     Args:
@@ -249,13 +272,16 @@ def test_plot_roc_curve(trainingdata: TrainingData, trainedmodels: TrainedModels
     outdir = tmp_path / 'images'
 
     assert outdir.exists(), \
-           'Expected <cwd>/images directory to be created.'
+        'Expected <cwd>/images directory to be created.'
 
     assert 0 < len(tuple(outdir.glob('*.png'))), \
-           'Expected at lest one ROC curve output picture.'
+        'Expected at lest one ROC curve output picture.'
 
 
-def test_plot_roc_curve_fileexistserror(trainingdata: TrainingData, tmp_path: 'Path', monkeypatch: pytest.MonkeyPatch):
+def test_plot_roc_curve_fileexistserror(
+        trainingdata: TrainingData,
+        tmp_path: 'Path',
+        monkeypatch: pytest.MonkeyPatch):
     """Test `plot_roc_cuve` when output directory cannot be created
 
     Args:
@@ -274,7 +300,11 @@ def test_plot_roc_curve_fileexistserror(trainingdata: TrainingData, tmp_path: 'P
         mut.plot_roc_cuve(trainingdata.x_test, trainingdata.y_test, ())
 
 
-def test_classification_report_image(trainingdata: TrainingData, trainedmodels: TrainedModels, tmp_path: 'Path', monkeypatch: pytest.MonkeyPatch):
+def test_classification_report_image(
+        trainingdata: TrainingData,
+        trainedmodels: TrainedModels,
+        tmp_path: 'Path',
+        monkeypatch: pytest.MonkeyPatch):
     """Test `classification_report_image` with valid input data
 
     Args:
@@ -293,19 +323,25 @@ def test_classification_report_image(trainingdata: TrainingData, trainedmodels: 
         kwargs[f'y_test_preds_{label}'] = model.predict(trainingdata.x_test)
 
     # plot curve
-    mut.classification_report_image(trainingdata.y_train, trainingdata.y_test, **kwargs)
+    mut.classification_report_image(
+        trainingdata.y_train,
+        trainingdata.y_test,
+        **kwargs)
 
     # check output directory
     outdir = tmp_path / 'images'
 
     assert outdir.exists(), \
-           'Expected <cwd>/images directory to be created.'
+        'Expected <cwd>/images directory to be created.'
 
     assert 2 == len(tuple(outdir.glob('*.png'))), \
-           'Expected exactly two classification report output pictures.'
+        'Expected exactly two classification report output pictures.'
 
 
-def test_classification_report_image_fileexistserror(trainingdata: TrainingData, tmp_path: 'Path', monkeypatch: pytest.MonkeyPatch):
+def test_classification_report_image_fileexistserror(
+        trainingdata: TrainingData,
+        tmp_path: 'Path',
+        monkeypatch: pytest.MonkeyPatch):
     """Test `classification_report_image` when output directory cannot be created
 
     Args:
@@ -321,12 +357,19 @@ def test_classification_report_image_fileexistserror(trainingdata: TrainingData,
 
     # plot curve
     with pytest.raises(FileExistsError):
-        mut.classification_report_image(trainingdata.y_train, trainingdata.y_test,
-                                        trainingdata.y_train, trainingdata.y_train,
-                                        trainingdata.y_test, trainingdata.y_test)
+        mut.classification_report_image(
+            trainingdata.y_train,
+            trainingdata.y_test,
+            trainingdata.y_train,
+            trainingdata.y_train,
+            trainingdata.y_test,
+            trainingdata.y_test)
 
 
-def test_feature_importance_plot(trainingdata: TrainingData, trainedmodels: TrainedModels, tmp_path: 'Path'):
+def test_feature_importance_plot(
+        trainingdata: TrainingData,
+        trainedmodels: TrainedModels,
+        tmp_path: 'Path'):
     """Test `classification_report_image` with valid input data
 
     Args:
@@ -335,7 +378,7 @@ def test_feature_importance_plot(trainingdata: TrainingData, trainedmodels: Trai
         tmp_path: temporary directory (fixture)
     """
     # check output file
-    outfile = tmp_path / 'directory'/ 'subdirectory' / 'feature_importance.png'
+    outfile = tmp_path / 'directory' / 'subdirectory' / 'feature_importance.png'
 
     # reconstruct data w/ feature engineering
     x_data = pd.concat((trainingdata.x_train, trainingdata.x_test))
@@ -344,10 +387,13 @@ def test_feature_importance_plot(trainingdata: TrainingData, trainedmodels: Trai
     mut.feature_importance_plot(trainedmodels.rfc, x_data, outfile)
 
     assert outfile.exists(), \
-           'Expected feature importance plot to be created.'
+        'Expected feature importance plot to be created.'
 
 
-def test_feature_importance_plot_fileexistserror(trainingdata: TrainingData, trainedmodels: TrainedModels, tmp_path: 'Path'):
+def test_feature_importance_plot_fileexistserror(
+        trainingdata: TrainingData,
+        trainedmodels: TrainedModels,
+        tmp_path: 'Path'):
     """Test `classification_report_image` with valid input data
 
     Args:
@@ -356,7 +402,7 @@ def test_feature_importance_plot_fileexistserror(trainingdata: TrainingData, tra
         tmp_path: temporary directory (fixture)
     """
     # check output file
-    outfile = tmp_path / 'directory'/ 'subdirectory' / 'feature_importance.png'
+    outfile = tmp_path / 'directory' / 'subdirectory' / 'feature_importance.png'
 
     # create directory file, so output directory cannot be created
     (tmp_path / 'directory').touch()
@@ -367,7 +413,7 @@ def test_feature_importance_plot_fileexistserror(trainingdata: TrainingData, tra
     # plot feature importances
     with pytest.raises(FileExistsError):
         mut.feature_importance_plot(trainedmodels.rfc, x_data, outfile)
-    
+
     # create sub-directory file, so output directory cannot be created
     (tmp_path / 'directory').rename(tmp_path / 'directory2')
     (tmp_path / 'directory').mkdir()
@@ -377,7 +423,11 @@ def test_feature_importance_plot_fileexistserror(trainingdata: TrainingData, tra
         mut.feature_importance_plot(trainedmodels.rfc, x_data, outfile)
 
 
-def test_train_models(trainingdata: TrainingData, trainedmodels: TrainedModels, tmp_path: 'Path', monkeypatch: pytest.MonkeyPatch):
+def test_train_models(
+        trainingdata: TrainingData,
+        trainedmodels: TrainedModels,
+        tmp_path: 'Path',
+        monkeypatch: pytest.MonkeyPatch):
     """Test `train_models` with valid input data
 
     We ignore the original LRC, because it's not part of the original course work
@@ -392,7 +442,8 @@ def test_train_models(trainingdata: TrainingData, trainedmodels: TrainedModels, 
     # change into temp directory using monkeypath
     monkeypatch.chdir(tmp_path)
 
-    # create models output directory (assumed to be present due to repo structure)
+    # create models output directory (assumed to be present due to repo
+    # structure)
     (tmp_path / 'models').mkdir()
 
     with patch.multiple(mut,
@@ -406,22 +457,26 @@ def test_train_models(trainingdata: TrainingData, trainedmodels: TrainedModels, 
         mocks['train_rfc'].return_value = trainedmodels.rfc
 
         # train models
-        mut.train_models(trainingdata.x_train, trainingdata.x_test, trainingdata.y_train, trainingdata.y_test,
-                        incl_orig_lrc=False)
-        
+        mut.train_models(
+            trainingdata.x_train,
+            trainingdata.x_test,
+            trainingdata.y_train,
+            trainingdata.y_test,
+            incl_orig_lrc=False)
+
         # models should have been trained exactly once
         assert 1 == mocks['train_lrc'].call_count, \
-                'Expected train_lrc to be called exactly once.'
+            'Expected train_lrc to be called exactly once.'
         assert 1 == mocks['train_rfc'].call_count, \
-                'Expected train_rfc to be called exactly once.'
-        
+            'Expected train_rfc to be called exactly once.'
+
         # output plots also need to be called exactly once
         assert 1 == mocks['plot_roc_cuve'].call_count, \
-                'Expected plot_roc_cuve to be called exactly once.'
+            'Expected plot_roc_cuve to be called exactly once.'
         assert 1 == mocks['classification_report_image'].call_count, \
-                'Expected classification_report_image to be called exactly once.'
+            'Expected classification_report_image to be called exactly once.'
         assert 1 == mocks['feature_importance_plot'].call_count, \
-                'Expected feature_importance_plot to be called exactly once.'
+            'Expected feature_importance_plot to be called exactly once.'
 
 
 def test_main(trainingdata: TrainingData):
@@ -436,7 +491,7 @@ def test_main(trainingdata: TrainingData):
                         perform_eda=DEFAULT,
                         perform_feature_engineering=DEFAULT,
                         train_models=DEFAULT) as mocks:
-        
+
         # make `import_data`, `perform_feature_engineering` return trainingdata
         mocks['import_data'].return_value = trainingdata.x_data
         mocks['perform_feature_engineering'].return_value = (
@@ -444,20 +499,29 @@ def test_main(trainingdata: TrainingData):
             trainingdata.x_test,
             trainingdata.y_train,
             trainingdata.y_test)
-        
+
         # set up expected calling order (must be list!)
         expected_calls = [
             call.import_data(ANY),
-            call.perform_eda(trainingdata.x_data),
-            call.perform_feature_engineering(trainingdata.x_data, 'Churn'),
-            call.train_models(trainingdata.x_train, trainingdata.x_test, trainingdata.y_train, trainingdata.y_test),
+            call.perform_eda(
+                trainingdata.x_data),
+            call.perform_feature_engineering(
+                trainingdata.x_data,
+                'Churn'),
+            call.train_models(
+                trainingdata.x_train,
+                trainingdata.x_test,
+                trainingdata.y_train,
+                trainingdata.y_test),
         ]
 
         # create top-level mock to record calling order
         main = Mock()
         main.attach_mock(mocks['import_data'], 'import_data')
         main.attach_mock(mocks['perform_eda'], 'perform_eda')
-        main.attach_mock(mocks['perform_feature_engineering'], 'perform_feature_engineering')
+        main.attach_mock(
+            mocks['perform_feature_engineering'],
+            'perform_feature_engineering')
         main.attach_mock(mocks['train_models'], 'train_models')
 
         # execute main function
@@ -465,7 +529,7 @@ def test_main(trainingdata: TrainingData):
 
         # make sure return code is 0
         assert 0 == rc, \
-               'main failed with rc={rc}.'
+            'main failed with rc={rc}.'
         # make sure calls were in order with proper arguments
         assert main.mock_calls == expected_calls, \
-               'main did not call functions in expected order/with expected arguments.'
+            'main did not call functions in expected order/with expected arguments.'
